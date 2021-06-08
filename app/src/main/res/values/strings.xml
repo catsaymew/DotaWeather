@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DotaWeather</string>
+    <string name="city_manage">管理城市</string>
+    <string name="c">°C</string>
+</resources>

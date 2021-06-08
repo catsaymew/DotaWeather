@@ -19,7 +19,7 @@ interface WeatherService {
     fun getHourlyWeather(@Query("location") location: String):
             Call<HourlyResponse>
 
-    @GET("v7/weather/15d?key=${DotaWeatherApplication.KEY}")
+    @GET("v7/weather/7d?key=${DotaWeatherApplication.KEY}")
     fun getDailyWeather(@Query("location") location: String):
             Call<DailyResponse>
 }

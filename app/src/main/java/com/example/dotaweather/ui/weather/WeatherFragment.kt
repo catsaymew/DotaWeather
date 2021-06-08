@@ -83,7 +83,12 @@ class WeatherFragment : Fragment() {
         hourlyAdapter = HourlyAdapter(weather.hourly)
         recyclerView.adapter = hourlyAdapter
         // 填写15天天气
-        val dailyLayoutManager = LinearLayoutManager(activity)
+        val dailyLayoutManager = object : LinearLayoutManager(activity) {
+            override fun canScrollVertically(): Boolean {
+                return false
+            }
+        }
+
         dailyRV.layoutManager = dailyLayoutManager
         dailyAdapter = DailyAdapter(weather.daily)
         dailyRV.adapter = dailyAdapter

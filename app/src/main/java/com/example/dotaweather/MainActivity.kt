@@ -1,12 +1,15 @@
 package com.example.dotaweather
 
+import android.animation.ObjectAnimator
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dotaweather.logic.Repository
 import com.example.dotaweather.logic.model.LocationResponse
@@ -21,6 +24,8 @@ import com.example.dotaweather.ui.weather.WeatherFragmentPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.daily_weather.*
 import kotlinx.android.synthetic.main.hourly_weather.*
+import kotlinx.android.synthetic.main.quality_item.*
+import kotlinx.android.synthetic.main.soft_item.*
 
 class MainActivity : AppCompatActivity() {
     private var locationList = ArrayList<LocationResponse.Location>()
@@ -33,6 +38,12 @@ class MainActivity : AppCompatActivity() {
             locationList = Repository.getSavedLocation()
         }
         initPager()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+//
+//            }
+//        }
+
     }
 
     override fun onRestart() {

@@ -1,11 +1,13 @@
 package com.example.dotaweather.ui.weather
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,12 +59,35 @@ class WeatherFragment : Fragment() {
             val weather = result.getOrNull()
             if (weather != null) {
                 showWeatherInfo(weather)
+                softCircle.setOnClickListener {
+                    val progressSoft = weather.now.humidity * 270f / 100
+                    val animatorSoft = ObjectAnimator.ofFloat(
+                        it,
+                        "progress",
+                        0f,
+                        progressSoft)
+                    animatorSoft.duration = 1000
+                    animatorSoft.interpolator = FastOutSlowInInterpolator()
+                    animatorSoft.start()
+                }
+                qualityCircle.setOnClickListener {
+                    val progressQuality = weather.quality.aqi * 270f / 500
+                    val animatorSoft = ObjectAnimator.ofFloat(
+                        it,
+                        "progress",
+                        0f,
+                        progressQuality)
+                    animatorSoft.duration = 1000
+                    animatorSoft.interpolator = FastOutSlowInInterpolator()
+                    animatorSoft.start()
+                }
             }else {
                 Toast.makeText(activity, "没得到天气数据，为啥呢？", Toast.LENGTH_SHORT).show()
 
             }
         })
         location?.let { viewModel.refreshWeather(it.id) }
+
     }
 
     private fun showWeatherInfo(weather: Weather) {

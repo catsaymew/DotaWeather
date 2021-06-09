@@ -43,6 +43,13 @@ class MainActivity : AppCompatActivity() {
 //
 //            }
 //        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                if (scrollY > oldScrollY) {
+                    Toast.makeText(this, "aasa", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
     }
 

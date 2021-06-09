@@ -14,7 +14,7 @@ class CircleView : View {
 //    val a = width
     private var progress = 0f
     private var paint = Paint()
-    private val radius = Utils.dpToPixel(70f)
+    private val radius = Utils.dpToPixel(60f)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)

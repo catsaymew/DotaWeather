@@ -1,5 +1,7 @@
 package com.example.dotaweather.logic.model
 
+import java.util.*
+
 data class NowResponse(val code: Int, val now: Now) {
     data class Now(
         val temp: Int, // 温度
@@ -11,5 +13,6 @@ data class NowResponse(val code: Int, val now: Now) {
         val windScale: Int, // 风力等级
         val windSpeed: Int, // 风速
         val humidity: Int, // 相对湿度，百分比
+        val obsTime: Date
     )
 }

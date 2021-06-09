@@ -1,9 +1,13 @@
 package com.example.dotaweather.ui.view
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import kotlinx.android.synthetic.main.sun.view.*
 
 
 class SunView : View {
@@ -15,7 +19,14 @@ class SunView : View {
         defStyleAttr
     )
     private var progress = 0f
+    private var progressPath = 0f
     private var paint = Paint()
+    private val RADIUS = Utils.dpToPixel(20f)
+    private var paintC = Paint()
+    private var paintD = Paint()
+    private var currentPosition = FloatArray(2)
+    private var path = Path()
+    private var pathMeasure = PathMeasure()
 
     fun getProgress(): Float {
         return progress
@@ -23,6 +34,15 @@ class SunView : View {
 
     fun setProgress(progress: Float) {
         this.progress = progress
+        invalidate()
+    }
+
+    fun getProgressPath(): Float {
+        return progressPath
+    }
+
+    fun setProgressPath(progressPath: Float) {
+        this.progressPath = progressPath
         invalidate()
     }
 
@@ -36,28 +56,52 @@ class SunView : View {
         }
         val pathEffect: PathEffect = DashPathEffect(floatArrayOf(Utils.dpToPixel(20f), Utils.dpToPixel(10f)), 0f)
         paint.pathEffect = pathEffect
-        var path = Path()
+        path = Path()
         path.arcTo(
+            Utils.dpToPixel(20f),
             Utils.dpToPixel(10f),
-            Utils.dpToPixel(10f),
-            width.toFloat() - 10f,
+            width.toFloat() - Utils.dpToPixel(20f),
             Utils.dpToPixel(300f),
             180f,
             180f,
             true)
         canvas?.drawPath(path, paint)
+        pathMeasure = PathMeasure(path, false)
+        pathMeasure.getPosTan(progress, currentPosition, null)
+        paintC.color = Color.YELLOW
+        canvas?.drawCircle(
+            currentPosition[0],
+            currentPosition[1],
+            RADIUS,
+            paintC
+        )
+        val path2 = Path()
+        path2.arcTo(
+            Utils.dpToPixel(20f),
+            Utils.dpToPixel(10f),
+            width.toFloat() - Utils.dpToPixel(20f),
+            Utils.dpToPixel(300f),
+            180f,
+            progressPath,
+            true)
+        paintD.apply {
+            style = Paint.Style.STROKE
+            strokeWidth = Utils.dpToPixel(5f)
+            strokeCap = Paint.Cap.ROUND
+            color = Color.YELLOW
+        }
+        val pathEffectD: PathEffect = DashPathEffect(floatArrayOf(Utils.dpToPixel(20f), Utils.dpToPixel(10f)), 0f)
+        paintD.pathEffect = pathEffectD
+        canvas?.drawPath(path2, paintD)
 
-//        paint.color = Color.parseColor("#E91E63")
-//        val path2 = Path()
-//        path2.arcTo(
-//            centerX - radius,
-//            centerY - radius,
-//            centerX + radius,
-//            centerY + radius,
-//            135f,
-//            progress,
-//            true)
-//        canvas?.drawPath(path2, paint)
-
+    }
+    fun anim(percent: Float) {
+        val animator = ObjectAnimator.ofFloat(sun, "progress", 0f, pathMeasure.length * percent)
+        val animatorPath = ObjectAnimator.ofFloat(sun, "progressPath", 0f, 180f * percent)
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(animator, animatorPath)
+        animatorSet.duration = 2000
+        animatorSet.interpolator = FastOutSlowInInterpolator()
+        animatorSet.start()
     }
 }

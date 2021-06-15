@@ -1,27 +1,22 @@
 package com.example.dotaweather.ui.weather
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import android.widget.Toast
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dotaweather.DotaWeatherApplication
 import com.example.dotaweather.R
 import com.example.dotaweather.logic.model.LocationResponse
 import com.example.dotaweather.logic.model.Weather
-import com.example.dotaweather.logic.model.dailyWeatherList
-import com.example.dotaweather.logic.model.hourlyWeatherList
-import com.example.dotaweather.ui.view.Utils
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.daily_weather.*
 import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.android.synthetic.main.hourly_weather.*
@@ -30,6 +25,7 @@ import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.quality_item.*
 import kotlinx.android.synthetic.main.soft_item.*
 import kotlinx.android.synthetic.main.sun.*
+import kotlinx.android.synthetic.main.sun.view.*
 import kotlinx.android.synthetic.main.wind_item.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,80 +61,168 @@ class WeatherFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//                if (scrollY > oldScrollY) {
-//                    Toast.makeText(this.context, "aasa", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        }
 
+        var flagQulity = false
+        var flagSoft = false
+        var flagWind = false
+        var flagSun = false
+
+//        val height8 = height7 + dailyRV.height
         viewModel.weatherLiveData.observe(viewLifecycleOwner, Observer { result ->
             val weather = result.getOrNull()
             if (weather != null) {
                 showWeatherInfo(weather)
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//                        //Log.e(TAG, "onScrollChange: " + scrollX +"---" + scrollY + "----" +oldScrollX + "---" + oldScrollY );
-//                        //监听滚动状态
-//
-//                        if (scrollY > oldScrollY) {//向下滚动
-//                            Log.i("MainActivity", "Scroll DOWN")
-//                            Toast.makeText(DotaWeatherApplication.context, "@@@@", Toast.LENGTH_SHORT).show()
-//                        }
-//                        if (scrollY < oldScrollY) {//向上滚动
-//                            Log.i("MainActivity", "Scroll UP");
-//                        }
-//
-//                        if (scrollY == 0) {// 滚动到顶
-//                            Log.i("MainActivity", "TOP SCROLL");
-//                        }
-//                        // 滚动到底
-//
-//
-//
-//                    }
-//                }
-                softCircle.setOnClickListener {
-                    val progressSoft = weather.now.humidity * 270f / 100
-                    val animatorSoft = ObjectAnimator.ofFloat(
-                        it,
-                        "progress",
-                        0f,
-                        progressSoft)
-                    animatorSoft.duration = 1000
-                    animatorSoft.interpolator = FastOutSlowInInterpolator()
-                    animatorSoft.start()
-                }
-                qualityCircle.setOnClickListener {
-                    val progressQuality = weather.quality.aqi * 270f / 500
-                    val animatorSoft = ObjectAnimator.ofFloat(
-                        it,
-                        "progress",
-                        0f,
-                        progressQuality)
-                    animatorSoft.duration = 1000
-                    animatorSoft.interpolator = FastOutSlowInInterpolator()
-                    animatorSoft.start()
-                }
-                sun.setOnClickListener {
-                    val progressSun = 0f
-                    val startTime = weather.daily[0].sunrise.split(":")
-                    val endTime = weather.daily[0].sunset.split(":")
-                    val start = (startTime[0].toInt() * 60 + startTime[1].toInt()).toFloat()
-                    val end = (endTime[0].toInt() * 60 + endTime[1].toInt()).toFloat()
-                    val time = (end - start)
-                    val simpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val nowTime = simpleDateFormat.format(weather.now.obsTime).split(":")
-                    val timeNow = (nowTime[0].toInt() * 60 + nowTime[1].toInt()).toFloat()
-                    if (timeNow < start) {
-                        sun.anim(0f)
-                    } else if (timeNow > end) {
-                        sun.anim(1f)
-                    } else {
-                        sun.anim((timeNow - start) / time)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //未实现的滚动监听
+                    fragmentWea.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                        val heightAll = now.height +
+                                recyclerView.height +
+                                dailyRV.height +
+                                quality.height +
+                                soft.height +
+                                wind.height +
+                                wholeSun.height
+                        val height1 = now.height
+                        val height2 = height1 + recyclerView.height
+                        val height3 = height2 + dailyRV.height
+                        val height4 = height3 + quality.height
+                        val height5 = height4 + soft.height
+                        val height6 = height5 + wind.height
+                        val height7 = fragmentWea.height - wholeSun.height
+                        val height8 = fragmentWea.height
+                        if (scrollY in 1 until height1) {
+                            flagQulity = false
+                            flagSoft = false
+                            flagWind = false
+                            flagSun = false
+                        }
+                        if (scrollY in (height1 + 1) until height3) {
+                            // 滚动到空气质量
+                            if (!flagQulity) {
+//                                Toast.makeText(this.context, "aaaa", Toast.LENGTH_SHORT).show()
+                                val progressQuality = weather.quality.aqi * 270f / 500
+                                val animatorSoft = ObjectAnimator.ofFloat(
+                                    qualityCircle,
+                                    "progress",
+                                    0f,
+                                    progressQuality)
+                                animatorSoft.duration = 1000
+                                animatorSoft.interpolator = FastOutSlowInInterpolator()
+                                animatorSoft.start()
+                                flagQulity = true
+                                flagWind = false
+                                flagSun = false
+                            }
+                        }
+                        if (scrollY in (height3 - dailyRV.height/2 + 1) until height4) {
+                            // 滚动到湿度
+                            if (!flagSoft) {
+//                                Toast.makeText(this.context, "bbbb", Toast.LENGTH_SHORT).show()
+                                val progressSoft = weather.now.humidity * 270f / 100
+                                val animatorSoft = ObjectAnimator.ofFloat(
+                                    softCircle,
+                                    "progress",
+                                    0f,
+                                    progressSoft)
+                                animatorSoft.duration = 1000
+                                animatorSoft.interpolator = FastOutSlowInInterpolator()
+                                animatorSoft.start()
+                                flagSoft = true
+                            }
+                        }
+                        if (scrollY > height4) {
+                            // 滚动到风力
+                            if (!flagWind) {
+//                                Toast.makeText(this.context, "cccc", Toast.LENGTH_SHORT).show()
+                                val animatorAlpha = ObjectAnimator.ofFloat(windVoid, "alpha", 0f, 1f)
+                                val animatorScaleX = ObjectAnimator.ofFloat(windVoid, "scaleX", 0f, 1f)
+                                val animatorScaleY = ObjectAnimator.ofFloat(windVoid, "scaleY", 0f, 1f)
+                                val animatorSet = AnimatorSet()
+                                animatorSet.playTogether(animatorAlpha, animatorScaleX,animatorScaleY)
+                                animatorSet.duration = 2000
+                                animatorSet.interpolator = BounceInterpolator()
+                                animatorSet.start()
+                                flagQulity = false
+                                flagSoft = false
+                                flagWind = true
+                            }
+                        }
+                        if (scrollY > height4 + soft.height/4) {
+                            // 滚动到日出
+                            if (!flagSun) {
+//                                Toast.makeText(this.context, "dddd", Toast.LENGTH_SHORT).show()
+                                val progressSun = 0f
+                                val startTime = weather.daily[0].sunrise.split(":")
+                                val endTime = weather.daily[0].sunset.split(":")
+                                val start = (startTime[0].toInt() * 60 + startTime[1].toInt()).toFloat()
+                                val end = (endTime[0].toInt() * 60 + endTime[1].toInt()).toFloat()
+                                val time = (end - start)
+                                val simpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                                val nowTime = simpleDateFormat.format(weather.now.obsTime).split(":")
+                                val timeNow = (nowTime[0].toInt() * 60 + nowTime[1].toInt()).toFloat()
+                                if (timeNow < start) {
+                                    sun.anim(0f)
+                                } else if (timeNow > end) {
+                                    sun.anim(1f)
+                                } else {
+                                    sun.anim((timeNow - start) / time)
+                                }
+                                flagSun = true
+                            }
+                        }
                     }
                 }
+//                softCircle.setOnClickListener {
+//                    val progressSoft = weather.now.humidity * 270f / 100
+//                    val animatorSoft = ObjectAnimator.ofFloat(
+//                        it,
+//                        "progress",
+//                        0f,
+//                        progressSoft)
+//                    animatorSoft.duration = 1000
+//                    animatorSoft.interpolator = FastOutSlowInInterpolator()
+//                    animatorSoft.start()
+//                }
+//                windVoid.setOnClickListener {
+//
+//                    val animatorAlpha = ObjectAnimator.ofFloat(it, "alpha", 0f, 1f)
+//                    val animatorScaleX = ObjectAnimator.ofFloat(it, "scaleX", 0f, 1f)
+//                    val animatorScaleY = ObjectAnimator.ofFloat(it, "scaleY", 0f, 1f)
+//                    val animatorSet = AnimatorSet()
+//                    animatorSet.playTogether(animatorAlpha, animatorScaleX,animatorScaleY)
+//                    animatorSet.duration = 2000
+//                    animatorSet.interpolator = BounceInterpolator()
+//                    animatorSet.start()
+//                }
+//                qualityCircle.setOnClickListener {
+//                    val progressQuality = weather.quality.aqi * 270f / 500
+//                    val animatorSoft = ObjectAnimator.ofFloat(
+//                        it,
+//                        "progress",
+//                        0f,
+//                        progressQuality)
+//                    animatorSoft.duration = 1000
+//                    animatorSoft.interpolator = FastOutSlowInInterpolator()
+//                    animatorSoft.start()
+//                }
+//                sun.setOnClickListener {
+//                    val progressSun = 0f
+//                    val startTime = weather.daily[0].sunrise.split(":")
+//                    val endTime = weather.daily[0].sunset.split(":")
+//                    val start = (startTime[0].toInt() * 60 + startTime[1].toInt()).toFloat()
+//                    val end = (endTime[0].toInt() * 60 + endTime[1].toInt()).toFloat()
+//                    val time = (end - start)
+//                    val simpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+//                    val nowTime = simpleDateFormat.format(weather.now.obsTime).split(":")
+//                    val timeNow = (nowTime[0].toInt() * 60 + nowTime[1].toInt()).toFloat()
+//                    if (timeNow < start) {
+//                        sun.anim(0f)
+//                    } else if (timeNow > end) {
+//                        sun.anim(1f)
+//                    } else {
+//                        sun.anim((timeNow - start) / time)
+//                    }
+//                }
             }else {
                 Toast.makeText(activity, "没得到天气数据，为啥呢？", Toast.LENGTH_SHORT).show()
 

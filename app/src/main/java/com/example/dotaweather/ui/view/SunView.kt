@@ -20,10 +20,10 @@ class SunView : View {
     )
     private var progress = 0f
     private var progressPath = 0f
-    private var paint = Paint()
-    private val RADIUS = Utils.dpToPixel(20f)
-    private var paintC = Paint()
-    private var paintD = Paint()
+    private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val RADIUS = Utils.dpToPixel(15f)
+    private var paintC = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var paintD = Paint(Paint.ANTI_ALIAS_FLAG)
     private var currentPosition = FloatArray(2)
     private var path = Path()
     private var pathMeasure = PathMeasure()
@@ -59,7 +59,7 @@ class SunView : View {
         path = Path()
         path.arcTo(
             Utils.dpToPixel(20f),
-            Utils.dpToPixel(10f),
+            RADIUS + Utils.dpToPixel(10f),
             width.toFloat() - Utils.dpToPixel(20f),
             Utils.dpToPixel(300f),
             180f,
@@ -78,7 +78,7 @@ class SunView : View {
         val path2 = Path()
         path2.arcTo(
             Utils.dpToPixel(20f),
-            Utils.dpToPixel(10f),
+            RADIUS + Utils.dpToPixel(10f),
             width.toFloat() - Utils.dpToPixel(20f),
             Utils.dpToPixel(300f),
             180f,

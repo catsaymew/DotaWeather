@@ -87,11 +87,10 @@ class LocationManageActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         val intent = Intent().apply {
             putExtra("location", locationList)
         }
         setResult(RESULT_OK, intent)
-        finish()
+        super.onBackPressed()
     }
 }

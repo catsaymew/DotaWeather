@@ -13,7 +13,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 class CircleView : View {
 //    val a = width
     private var progress = 0f
-    private var paint = Paint()
+    private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val radius = Utils.dpToPixel(60f)
 
     constructor(context: Context?) : super(context)

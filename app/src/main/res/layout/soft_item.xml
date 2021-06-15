@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/soft"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="15dp"
@@ -79,14 +80,32 @@
                         android:layout_height="match_parent"
                         android:layout_centerInParent="true"
                         />
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
                         android:layout_alignParentBottom="true"
-                        android:text="            0                  100"
-                        android:textColor="#fff"
-                        android:alpha="0.5"
-                        />
+                        android:layout_marginBottom="10dp"
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="0"
+                            android:textColor="#fff"
+                            android:alpha="0.5"
+                            android:layout_marginStart="40dp"
+                            android:gravity="center"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="100"
+                            android:textColor="#fff"
+                            android:alpha="0.5"
+                            android:layout_marginStart="60dp"
+                            android:gravity="center"
+                            />
+                    </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
 
